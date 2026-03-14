@@ -1,6 +1,6 @@
 # sensorbio-mcp-server (Python)
 
-Python MCP (Model Context Protocol) server for **Sensr** (https://api.getsensr.io).
+Python MCP (Model Context Protocol) server for **Sensor Bio** (https://api.getsensr.io).
 
 ## Requirements
 - Python **3.11+**
@@ -12,7 +12,7 @@ This server supports **two** authentication modes:
 
 ### 1) Organization token (recommended if you have it)
 
-- Env var: `SENSR_ORG_TOKEN`
+- Env var: `SENSR_ORG_TOKEN` (preferred) or `SENSR_API_KEY` (alias)
 - Request header: `Authorization: APIKey <token>`
 
 ### 2) OAuth2 (client_credentials)
@@ -24,7 +24,7 @@ This server supports **two** authentication modes:
 - (Documented) Redirect URL: `https://developers.getsensr.io/`
 
 Notes:
-- `SensrClient.from_env()` **prefers** `SENSR_ORG_TOKEN` when present; otherwise it uses OAuth.
+- `SensrClient.from_env()` uses `SENSR_ORG_TOKEN` first, then falls back to `SENSR_API_KEY`. If neither is present, it uses OAuth.
 - OAuth access tokens are cached in-memory and refreshed when there are **< 60s** left before expiry.
 
 ## Install / Run (uvx)
@@ -36,7 +36,7 @@ uvx --from . sensorbio-mcp-server
 
 ### From GitHub
 ```bash
-uvx --from git+https://github.com/Biostrap/sensorbio-mcp-server-python sensorbio-mcp-server
+uvx --from git+https://github.com/GetSensr-io/sensorbio-mcp-server sensorbio-mcp-server
 ```
 
 ## Claude Desktop config
@@ -51,7 +51,7 @@ Add this to Claude Desktop `mcpServers`.
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/Biostrap/sensorbio-mcp-server-python",
+        "git+https://github.com/GetSensr-io/sensorbio-mcp-server",
         "sensorbio-mcp-server"
       ],
       "env": {
@@ -70,7 +70,7 @@ Add this to Claude Desktop `mcpServers`.
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/Biostrap/sensorbio-mcp-server-python",
+        "git+https://github.com/GetSensr-io/sensorbio-mcp-server",
         "sensorbio-mcp-server"
       ],
       "env": {
@@ -101,11 +101,14 @@ Calls `/v1/organizations/users/ids` using the active auth mode:
 uv run python3 scripts/smoke_test.py
 ```
 
-## Publishing to GitHub (instructions)
+## Publishing to GitHub
+
+This repo now lives at:
+- https://github.com/GetSensr-io/sensorbio-mcp-server
+
+If you are publishing from a local clone, set the new remote and push:
 
 ```bash
-cd /home/ubuntu/.openclaw/shared/projects/sensorbio-mcp-server-python
-gh repo create Biostrap/sensorbio-mcp-server-python --public --source . --remote origin --push
+git remote set-url origin https://github.com/GetSensr-io/sensorbio-mcp-server.git
+git push -u origin main
 ```
-
-Then update the GitHub URL in the Claude Desktop snippet above.

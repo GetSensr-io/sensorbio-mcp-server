@@ -98,6 +98,9 @@ class SensrClient:
     def from_env(cls) -> "SensrClient":
         # Prefer org token (APIKey auth) if present.
         org_token = os.getenv("SENSR_ORG_TOKEN")
+        if not org_token:
+            # Backwards/compat alias, many environments use this name.
+            org_token = os.getenv("SENSR_API_KEY")
         if org_token:
             base_url = os.getenv("SENSR_BASE_URL", DEFAULT_BASE_URL)
             return cls(api_key=org_token, base_url=base_url)
@@ -107,12 +110,12 @@ class SensrClient:
         client_secret = os.getenv("SENSR_CLIENT_SECRET")
         if not client_id or not client_secret:
             raise SensrError(
-                "Missing auth env vars. Set either SENSR_ORG_TOKEN (org API key) or both "
-                "SENSR_CLIENT_ID and SENSR_CLIENT_SECRET (OAuth2 client_credentials)."
+                "Missing auth env vars. Set either SENSR_ORG_TOKEN or SENSR_API_KEY (org API key), "
+                "or both SENSR_CLIENT_ID and SENSR_CLIENT_SECRET (OAuth2 client_credentials)."
             )
 
         scope = os.getenv("SENSR_SCOPE")
-        token_url = os.getenv("SENSR_TOKEN_URL", DEFAULT_TOKEN_URL)
+        token_url = DEFAULT_TOKEN_URL
         base_url = os.getenv("SENSR_BASE_URL", DEFAULT_BASE_URL)
         return cls(
             oauth_client_id=client_id,

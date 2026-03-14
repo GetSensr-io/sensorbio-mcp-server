@@ -8,6 +8,7 @@ from sensorbio_mcp_server.sensr_client import SensrClient, SensrError
 def _clear_env(monkeypatch: pytest.MonkeyPatch) -> None:
     for k in [
         "SENSR_ORG_TOKEN",
+        "SENSR_API_KEY",
         "SENSR_CLIENT_ID",
         "SENSR_CLIENT_SECRET",
         "SENSR_SCOPE",
@@ -38,6 +39,25 @@ def test_from_env_uses_oauth_when_no_org_token(monkeypatch: pytest.MonkeyPatch) 
     assert client.auth_mode() == "oauth"
     assert client.api_key is None
     assert client.oauth_client_id == "cid"
+
+
+def test_from_env_uses_api_key_fallback(monkeypatch: pytest.MonkeyPatch) -> None:
+    _clear_env(monkeypatch)
+    monkeypatch.setenv("SENSR_API_KEY", "api_key_value")
+
+    client = SensrClient.from_env()
+    assert client.auth_mode() == "org"
+    assert client.api_key == "api_key_value"
+
+
+def test_from_env_org_token_precedence_over_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    _clear_env(monkeypatch)
+    monkeypatch.setenv("SENSR_ORG_TOKEN", "org_token_value")
+    monkeypatch.setenv("SENSR_API_KEY", "api_key_value")
+
+    client = SensrClient.from_env()
+    assert client.auth_mode() == "org"
+    assert client.api_key == "org_token_value"
 
 
 def test_from_env_missing_everything(monkeypatch: pytest.MonkeyPatch) -> None:
