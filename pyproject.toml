@@ -1,7 +1,7 @@
 [project]
 name = "sensorbio-mcp-server"
 version = "0.2.0"
-description = "MCP server for Sensor Bio (getsensr.io)"
+description = "MCP server for Sensor Bio (sensorbio.com)"
 urls = { Homepage = "https://github.com/GetSensr-io/sensorbio-mcp-server", Repository = "https://github.com/GetSensr-io/sensorbio-mcp-server" }
 readme = "README.md"
 requires-python = ">=3.11"

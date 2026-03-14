@@ -12,6 +12,6 @@ def test_expand_date_range_start_end():
 
 
 def test_cursor_from_next_link():
-    assert cursor_from_next_link("https://api.getsensr.io/v1/x?cursor=abc123") == "abc123"
-    assert cursor_from_next_link("https://api.getsensr.io/v1/x?page%5Bcursor%5D=zzz") == "zzz"
+    assert cursor_from_next_link("https://api.sensorbio.com/v1/x?cursor=abc123") == "abc123"
+    assert cursor_from_next_link("https://api.sensorbio.com/v1/x?page%5Bcursor%5D=zzz") == "zzz"
     assert cursor_from_next_link(None) is None

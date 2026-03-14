@@ -11,8 +11,8 @@ import threading
 import httpx
 
 
-DEFAULT_BASE_URL = "https://api.getsensr.io"
-DEFAULT_TOKEN_URL = "https://auth.getsensr.io/token"
+DEFAULT_BASE_URL = "https://api.sensorbio.com"
+DEFAULT_TOKEN_URL = "https://auth.sensorbio.com/token"
 
 # Process-wide throttle state (per python process, shared across client instances).
 _THROTTLE_LOCK = threading.Lock()

@@ -1,6 +1,6 @@
 # sensorbio-mcp-server (Python)
 
-Python MCP (Model Context Protocol) server for **Sensor Bio** (https://api.getsensr.io).
+Python MCP (Model Context Protocol) server for **Sensor Bio** (https://api.sensorbio.com).
 
 ## Requirements
 - Python **3.11+**
@@ -19,9 +19,9 @@ This server supports **two** authentication modes:
 
 - Env vars: `SENSR_CLIENT_ID`, `SENSR_CLIENT_SECRET`
 - Optional: `SENSR_SCOPE`
-- Token URL: `https://auth.getsensr.io/token`
-- (Documented, not used for client_credentials) Auth URL: `https://auth.getsensr.io/authorize`
-- (Documented) Redirect URL: `https://developers.getsensr.io/`
+- Token URL: `https://auth.sensorbio.com/token`
+- (Documented, not used for client_credentials) Auth URL: `https://auth.sensorbio.com/authorize`
+- (Documented) Redirect URL: `https://developers.sensorbio.com/`
 
 Notes:
 - `SensrClient.from_env()` uses `SENSR_ORG_TOKEN` first, then falls back to `SENSR_API_KEY`. If neither is present, it uses OAuth.
@@ -83,14 +83,18 @@ Add this to Claude Desktop `mcpServers`.
 }
 ```
 
-## Tools exposed (matching Node server)
+## Tools exposed
 - `list_users(page=1, limit=100, search=None)`
 - `get_user_ids()`
-- `get_sleep(user_id, date=None)`
-- `get_scores(user_id, date=None)`
-- `get_activities(user_id, last_timestamp=0, limit=50)`
-- `get_biometrics(user_id, last_timestamp=0, limit=50)`
-- `get_calories(user_id, date=None, granularity=None)`
+- `get_user_by_email(email)`
+- `search_user(query, page=1, limit=50)`
+- `get_sleep(user_id, date=None, start_date=None, end_date=None, days=None, summary_only=True)`
+- `get_scores(user_id, date=None, start_date=None, end_date=None, days=None)`
+- `get_activities(user_id, start_date=None, end_date=None, start_timestamp_ms=None, end_timestamp_ms=None, cursor=None, last_timestamp=None, limit=50)`
+- `get_biometrics(user_id, start_date=None, end_date=None, start_timestamp_ms=None, end_timestamp_ms=None, cursor=None, last_timestamp=None, limit=50)`
+- `get_calories(user_id, date=None, start_date=None, end_date=None, days=None, granularity=None)`
+- `get_org_sleep_summary(date=None, start_date=None, end_date=None, days=None)`
+- `get_org_scores_summary(date=None, start_date=None, end_date=None, days=None)`
 - `debug_request(path, query=None)`
 
 ## Smoke test
@@ -101,14 +105,3 @@ Calls `/v1/organizations/users/ids` using the active auth mode:
 uv run python3 scripts/smoke_test.py
 ```
 
-## Publishing to GitHub
-
-This repo now lives at:
-- https://github.com/GetSensr-io/sensorbio-mcp-server
-
-If you are publishing from a local clone, set the new remote and push:
-
-```bash
-git remote set-url origin https://github.com/GetSensr-io/sensorbio-mcp-server.git
-git push -u origin main
-```
