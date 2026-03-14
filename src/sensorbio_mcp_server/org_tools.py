@@ -68,6 +68,7 @@ def org_sleep_summary(
         sem = anyio.Semaphore(concurrency)
         async with anyio.create_task_group() as tg:
             for uid in ids:  # type: ignore[assignment]
+
                 async def _one(u: str = uid) -> None:
                     async with sem:
                         await fetch_user(u)
@@ -81,7 +82,11 @@ def org_sleep_summary(
         for uid in ids:  # type: ignore[assignment]
             anyio.run(fetch_user, uid)
 
-    return {"range": {"dates": dr.dates, **make_range_summary([{ "date": d } for d in dr.dates])}, "users": users, "errors": errors}
+    return {
+        "range": {"dates": dr.dates, **make_range_summary([{"date": d} for d in dr.dates])},
+        "users": users,
+        "errors": errors,
+    }
 
 
 def org_scores_summary(
@@ -122,6 +127,7 @@ def org_scores_summary(
         sem = anyio.Semaphore(concurrency)
         async with anyio.create_task_group() as tg:
             for uid in ids:  # type: ignore[assignment]
+
                 async def _one(u: str = uid) -> None:
                     async with sem:
                         await fetch_user(u)
@@ -134,4 +140,8 @@ def org_scores_summary(
         for uid in ids:  # type: ignore[assignment]
             anyio.run(fetch_user, uid)
 
-    return {"range": {"dates": dr.dates, **make_range_summary([{ "date": d } for d in dr.dates])}, "users": users, "errors": errors}
+    return {
+        "range": {"dates": dr.dates, **make_range_summary([{"date": d} for d in dr.dates])},
+        "users": users,
+        "errors": errors,
+    }

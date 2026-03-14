@@ -3,13 +3,13 @@ from __future__ import annotations
 import json
 import os
 import random
-import time
-from dataclasses import dataclass
-from typing import Any, Mapping
 import threading
+import time
+from collections.abc import Mapping
+from dataclasses import dataclass
+from typing import Any
 
 import httpx
-
 
 DEFAULT_BASE_URL = "https://api.sensorbio.com"
 DEFAULT_TOKEN_URL = "https://auth.sensorbio.com/token"
@@ -95,7 +95,7 @@ class SensrClient:
     _access_token_expires_at: float | None = None
 
     @classmethod
-    def from_env(cls) -> "SensrClient":
+    def from_env(cls) -> SensrClient:
         # Prefer org token (APIKey auth) if present.
         org_token = os.getenv("SENSR_ORG_TOKEN")
         if not org_token:
@@ -160,7 +160,9 @@ class SensrClient:
             )
 
         if resp.status_code >= 400:
-            raise SensrError(f"OAuth token request failed HTTP {resp.status_code}: {resp.text[:500]}")
+            raise SensrError(
+                f"OAuth token request failed HTTP {resp.status_code}: {resp.text[:500]}"
+            )
 
         token_json = self._safe_json(resp)
         access_token = token_json.get("access_token")
@@ -239,7 +241,7 @@ class SensrClient:
 
                     if resp.status_code in (500, 502, 503, 504):
                         raise SensrError(
-                            f"Transient HTTP {resp.status_code} for {method} {path}: {resp.text[:500]}"
+                            f"Transient HTTP {resp.status_code} {method} {path}: {resp.text[:400]}"
                         )
 
                     if resp.status_code >= 400:
@@ -256,9 +258,7 @@ class SensrClient:
                     sleep_s = (2**attempt) * 0.5 + random.random() * 0.25
                     time.sleep(sleep_s)
 
-        raise SensrError(
-            f"Request failed after retries: {method} {path}. Last error: {last_exc}"
-        )
+        raise SensrError(f"Request failed after retries: {method} {path}. Last error: {last_exc}")
 
     def debug_request(
         self,
@@ -284,5 +284,6 @@ class SensrClient:
         except json.JSONDecodeError:
             ctype = resp.headers.get("content-type", "")
             raise SensrError(
-                f"Non-JSON response (content-type={ctype}) status={resp.status_code}: {resp.text[:1000]}"
-            )
+                f"Non-JSON response (content-type={ctype})"
+                f" status={resp.status_code}: {resp.text[:800]}"
+            ) from None

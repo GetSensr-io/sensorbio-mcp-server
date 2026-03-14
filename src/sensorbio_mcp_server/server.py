@@ -5,9 +5,14 @@ from typing import Any
 from mcp.server.fastmcp import FastMCP
 
 from .org_tools import org_scores_summary, org_sleep_summary
-from .sensr_client import SensrClient, SensrError, error_dict
-from .utils import cursor_from_next_link, expand_date_range, make_range_summary, strip_sleep_payload, today_str
-
+from .sensr_client import SensrClient, error_dict
+from .utils import (
+    cursor_from_next_link,
+    expand_date_range,
+    make_range_summary,
+    strip_sleep_payload,
+    today_str,
+)
 
 mcp = FastMCP("sensorbio")
 
@@ -16,7 +21,9 @@ def _sensr() -> SensrClient:
     return SensrClient.from_env()
 
 
-def _std_error(e: Exception, *, endpoint: str, method: str, status: int | None = None) -> dict[str, Any]:
+def _std_error(
+    e: Exception, *, endpoint: str, method: str, status: int | None = None
+) -> dict[str, Any]:
     return error_dict(
         message=f"{type(e).__name__}: {e}",
         endpoint=endpoint,
@@ -77,7 +84,11 @@ def get_user_by_email(email: str) -> dict[str, Any]:
                     if isinstance(u, dict) and str(u.get("email", "")).lower() == email.lower():
                         return {"data": u}
             pagination = resp.get("pagination")
-            if isinstance(pagination, dict) and pagination.get("page") and pagination.get("available_pages"):
+            if (
+                isinstance(pagination, dict)
+                and pagination.get("page")
+                and pagination.get("available_pages")
+            ):
                 if pagination["page"] >= pagination["available_pages"]:
                     break
             if not users:
@@ -139,7 +150,11 @@ def get_sleep(
             if summary_only:
                 resp = strip_sleep_payload(resp)
             results.append({"date": d, "data": resp.get("data")})
-        return {"range": {"dates": dr.dates}, "results": results, "summary": make_range_summary(results)}
+        return {
+            "range": {"dates": dr.dates},
+            "results": results,
+            "summary": make_range_summary(results),
+        }
     except Exception as e:
         return _std_error(e, endpoint="/v1/sleep", method="GET")
 
@@ -169,7 +184,11 @@ def get_scores(
         for d in dr.dates:
             resp = client.request("GET", "/v1/scores", params={"user_id": user_id, "date": d})
             results.append({"date": d, "data": resp.get("data")})
-        return {"range": {"dates": dr.dates}, "results": results, "summary": make_range_summary(results)}
+        return {
+            "range": {"dates": dr.dates},
+            "results": results,
+            "summary": make_range_summary(results),
+        }
     except Exception as e:
         return _std_error(e, endpoint="/v1/scores", method="GET")
 
@@ -225,7 +244,12 @@ def get_activities(
         next_cursor = cursor_from_next_link(next_url) if isinstance(next_url, str) else None
         has_more = bool(next_url or next_cursor)
 
-        return {"data": data, "next_cursor": next_cursor, "has_more": has_more, "next_url": next_url}
+        return {
+            "data": data,
+            "next_cursor": next_cursor,
+            "has_more": has_more,
+            "next_url": next_url,
+        }
     except Exception as e:
         return _std_error(e, endpoint=endpoint, method="GET")
 
@@ -279,7 +303,12 @@ def get_biometrics(
         next_cursor = cursor_from_next_link(next_url) if isinstance(next_url, str) else None
         has_more = bool(next_url or next_cursor)
 
-        return {"data": data, "next_cursor": next_cursor, "has_more": has_more, "next_url": next_url}
+        return {
+            "data": data,
+            "next_cursor": next_cursor,
+            "has_more": has_more,
+            "next_url": next_url,
+        }
     except Exception as e:
         return _std_error(e, endpoint=endpoint, method="GET")
 
@@ -390,7 +419,8 @@ def get_org_scores_summary(
 
 @mcp.tool(
     description=(
-        "Low-level debugging helper: make a GET request and return {status, headers_subset, body_preview}.\n\n"
+        "Low-level debugging helper: make a GET request "
+        "and return {status, headers_subset, body_preview}.\n\n"
         "Params:\n"
         "- path (str, required): may be '/v1/...' or 'v1/...'\n"
         "- query (dict[str,str], optional)"

@@ -11,7 +11,7 @@ def main() -> None:
         client = SensrClient.from_env()
     except SensrError as e:
         print(f"auth_mode=error ({e})")
-        raise SystemExit(2)
+        raise SystemExit(2) from e
 
     print(f"auth_mode={client.auth_mode()}")
 

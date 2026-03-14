@@ -1,5 +1,3 @@
-import os
-
 import pytest
 
 from sensorbio_mcp_server.sensr_client import SensrClient, SensrError
