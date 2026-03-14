@@ -71,14 +71,14 @@ def get_user_by_email(email: str) -> dict[str, Any]:
                 "/v1/organizations/users",
                 params={"page": page, "items_per_page": 200, "q": email},
             )
-            users = resp.get("data")
+            users = resp.get("users")
             if isinstance(users, list):
                 for u in users:
                     if isinstance(u, dict) and str(u.get("email", "")).lower() == email.lower():
                         return {"data": u}
-            meta = resp.get("meta")
-            if isinstance(meta, dict) and meta.get("current_page") and meta.get("total_pages"):
-                if meta["current_page"] >= meta["total_pages"]:
+            pagination = resp.get("pagination")
+            if isinstance(pagination, dict) and pagination.get("page") and pagination.get("available_pages"):
+                if pagination["page"] >= pagination["available_pages"]:
                     break
             if not users:
                 break
