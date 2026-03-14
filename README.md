@@ -137,6 +137,7 @@ Once connected, your AI assistant has access to these tools:
 | **list_users**             | List all users in your organization                    | "Show me all users"                               |
 | **get_user_ids**           | Get all user IDs                                       | "How many users are in the org?"                  |
 | **get_user_by_email**      | Find a user by their email address                     | "Look up john@example.com"                        |
+| **get_user_profile**       | Get a specific user's full profile                     | "Show me Bryan's profile"                         |
 | **search_user**            | Search users by name or email                          | "Find users named Sarah"                          |
 | **get_sleep**              | Sleep data: duration, score, stages                    | "How did I sleep last week?"                      |
 | **get_scores**             | Recovery, sleep, and activity scores                   | "What's my recovery score today?"                 |

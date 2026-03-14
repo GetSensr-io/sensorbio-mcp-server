@@ -99,6 +99,46 @@ def get_user_by_email(email: str) -> dict[str, Any]:
         return _std_error(e, endpoint="/v1/organizations/users", method="GET")
 
 
+
+
+@mcp.tool(
+    description=(
+        "Get a specific user's full profile by user ID.\n\n"
+        "Params:\n"
+        "- user_id (str, required): the user's ID\n\n"
+        "Returns: {data: user|null} or {error:...}"
+    )
+)
+def get_user_profile(user_id: str) -> dict[str, Any]:
+    try:
+        client = _sensr()
+        page = 1
+        while page <= 50:
+            resp = client.request(
+                "GET",
+                "/v1/organizations/users",
+                params={"page": page, "items_per_page": 200},
+            )
+            users = resp.get("users")
+            if isinstance(users, list):
+                for u in users:
+                    if isinstance(u, dict) and str(u.get("id", "")) == str(user_id):
+                        return {"data": u}
+            pagination = resp.get("pagination")
+            if (
+                isinstance(pagination, dict)
+                and pagination.get("page")
+                and pagination.get("available_pages")
+            ):
+                if pagination["page"] >= pagination["available_pages"]:
+                    break
+            if not users:
+                break
+            page += 1
+        return {"data": None}
+    except Exception as e:
+        return _std_error(e, endpoint="/v1/organizations/users", method="GET")
+
 @mcp.tool(
     description=(
         "Search for users by a free-text query (name/email).\n\n"

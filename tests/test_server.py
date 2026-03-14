@@ -194,6 +194,7 @@ def test_tool_functions_importable():
         get_sleep,
         get_user_by_email,
         get_user_ids,
+        get_user_profile,
         list_users,
         search_user,
     )
@@ -210,6 +211,7 @@ def test_tool_functions_importable():
     assert callable(get_calories)
     assert callable(get_org_sleep_summary)
     assert callable(get_org_scores_summary)
+    assert callable(get_user_profile)
     assert callable(debug_request)
 
 
@@ -229,3 +231,26 @@ def test_tools_return_error_without_auth(monkeypatch: pytest.MonkeyPatch):
 
     r = get_scores("fake_user_id", date="2026-03-14")
     assert "error" in r
+
+
+# ---------------------------------------------------------------------------
+# get_user_profile: importable, callable, error without auth
+# ---------------------------------------------------------------------------
+
+
+def test_get_user_profile_importable():
+    from sensorbio_mcp_server.server import get_user_profile
+
+    assert callable(get_user_profile)
+
+
+def test_get_user_profile_returns_error_without_auth(monkeypatch: pytest.MonkeyPatch):
+    """Without auth env vars, get_user_profile should return an error dict, not raise."""
+    for k in ["SENSR_ORG_TOKEN", "SENSR_API_KEY", "SENSR_CLIENT_ID", "SENSR_CLIENT_SECRET"]:
+        monkeypatch.delenv(k, raising=False)
+
+    from sensorbio_mcp_server.server import get_user_profile
+
+    r = get_user_profile("some-user-id")
+    assert "error" in r
+    assert "message" in r["error"]
