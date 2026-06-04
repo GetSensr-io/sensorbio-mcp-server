@@ -1,0 +1,77 @@
+name: Security
+
+# NOTE (GitHub Team): publishing results to the GitHub Security tab via SARIF
+# upload requires GitHub Advanced Security (Enterprise); we are on Team, so the
+# upload steps below are commented out. Every scanner still RUNS and prints its
+# findings to this job's log. To enable the Security tab later: upgrade to
+# Enterprise + Advanced Security and uncomment the upload-sarif steps.
+
+on:
+  pull_request:
+    branches: [main, master, develop]
+  push:
+    branches: [main, master, develop]
+  schedule:
+    - cron: '17 6 * * 1'  # weekly Monday 06:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  bandit:
+    name: bandit (SAST)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - run: pip install bandit && bandit -r . -ll || true
+
+  pip-audit:
+    name: pip-audit (SCA)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - run: pip install pip-audit && pip-audit || true
+
+  gitleaks:
+    name: gitleaks (secret scanning)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          fetch-depth: 0
+      - name: gitleaks
+        run: |
+          ver=8.21.2
+          curl -sSfL "https://github.com/gitleaks/gitleaks/releases/download/v${ver}/gitleaks_${ver}_linux_arm64.tar.gz" | tar -xz gitleaks
+          ./gitleaks dir . --redact --no-banner --exit-code 1
+
+  semgrep:
+    name: semgrep (OWASP + Python rulesets)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    container:
+      image: returntocorp/semgrep:1.107.0
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - run: |
+          semgrep ci \
+            --config p/owasp-top-ten \
+            --config p/python \
+            --config p/secrets \
+            || true
+#      - uses: github/codeql-action/upload-sarif@03e4368ac7daa2bd82b3e85262f3bf87ee112f57 # v3
+#        with:
+#          sarif_file: semgrep.sarif
+#          category: semgrep

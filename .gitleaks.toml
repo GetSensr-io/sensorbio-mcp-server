@@ -1,0 +1,23 @@
+# gitleaks configuration (SB-890 baseline).
+#
+# Extends gitleaks' built-in rules. Add REPO-SPECIFIC allowlists below as real
+# false-positives surface (vendored/minified libs, test fixtures, client-side
+# public keys). Keep every entry NARROW and COMMENTED -- allowlisting is for
+# noise reduction, NOT for trusting code. A broad allowlist is a blind spot.
+#
+# NOTE: allowlisting a vendored file only stops SECRET scanning of it; it does NOT
+# make that dependency trusted. Supply-chain risk (malicious/vulnerable deps) is
+# covered separately (npm audit / Dependabot / Trivy / SBOM); vendored code
+# committed outside the package manager is a known blind spot worth migrating to a
+# managed dependency.
+title = "sensorbio gitleaks config"
+
+[extend]
+useDefault = true
+
+# Example repo-specific allowlist (uncomment + adapt):
+# [allowlist]
+# description = "repo-specific false positives"
+# paths = [
+#   '''public/lib/.*\.min\.js$''',   # a vendored, minified third-party library
+# ]
