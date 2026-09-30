@@ -11,7 +11,10 @@ dependencies = [
   "httpx[http2]>=0.27",
   "anyio>=4.0",
   # MCP Python SDK. Package name is `mcp`.
-  "mcp>=1.2.0",
+  # Upper bound: mcp 2.0.0 removed `mcp.server.fastmcp`, which server.py imports.
+  # Without this cap, `uvx --from git+...` resolves the latest release and the
+  # entry point fails with ModuleNotFoundError before the server can start.
+  "mcp>=1.2.0,<2",
 ]
 
 [project.scripts]
