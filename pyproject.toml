@@ -10,8 +10,9 @@ license = { text = "MIT" }
 dependencies = [
   "httpx[http2]>=0.27",
   "anyio>=4.0",
-  # MCP Python SDK. Package name is `mcp`.
-  "mcp>=1.2.0",
+  # MCP Python SDK. Package name is `mcp`. 1.30.0 is the first release without
+  # the open advisories; 2.x renames FastMCP, which server.py still imports.
+  "mcp>=1.30.0,<2",
 ]
 
 [project.scripts]
